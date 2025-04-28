@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { copy } from "lucide-react";
+import { Copy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import TestPanel from "./TestPanel";
 
@@ -82,7 +82,7 @@ const TestDataDisplay: React.FC<TestDataDisplayProps> = ({
                 variant="default"
                 className="bg-sf-blue hover:bg-sf-blue/90"
               >
-                <copy className="h-4 w-4 mr-1" />
+                <Copy className="h-4 w-4 mr-1" />
                 Copy All Data
               </Button>
             </div>

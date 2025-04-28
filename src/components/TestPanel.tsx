@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { copy } from "lucide-react";
+import { Copy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -54,7 +54,7 @@ const TestPanel: React.FC<TestPanelProps> = ({
           e.stopPropagation();
           copyToClipboard();
         }} className={cn(hasCopied ? "text-green-500" : "")}>
-          <copy className="h-4 w-4 mr-1" />
+          <Copy className="h-4 w-4 mr-1" />
           {hasCopied ? "Copied!" : "Copy"}
         </Button>
       </CardHeader>
