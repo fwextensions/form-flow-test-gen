@@ -42,13 +42,36 @@ const TestPanel: React.FC<TestPanelProps> = ({
   };
 
   const copyFieldData = (field: string, value: any) => {
-    const success = copyToClipboard(value, `Value for ${field}`);
+    const success = copyToClipboard(value, `Value for ${formatFieldLabel(field)}`);
     if (success) {
       setCopiedFields(prev => ({ ...prev, [field]: true }));
       setTimeout(() => {
         setCopiedFields(prev => ({ ...prev, [field]: false }));
       }, 2000);
     }
+  };
+
+  // Function to format field keys into readable labels
+  const formatFieldLabel = (key: string): string => {
+    // Handle common field patterns
+    if (key === 'firstName' || key === 'first_name') return 'First Name';
+    if (key === 'lastName' || key === 'last_name') return 'Last Name';
+    if (key === 'emailAddress' || key === 'email') return 'Email Address';
+    if (key === 'phoneNumber' || key === 'phone') return 'Phone Number';
+    if (key === 'zipCode' || key === 'zip') return 'Zip Code';
+    
+    // General formatting: convert camelCase or snake_case to Title Case with spaces
+    return key
+      // Insert a space before each capital letter and uppercase the first letter
+      .replace(/([A-Z])/g, ' $1')
+      // Replace underscores with spaces
+      .replace(/_/g, ' ')
+      // Trim leading spaces that might result from the replacements
+      .trim()
+      // Capitalize first letter
+      .replace(/^\w/, (c) => c.toUpperCase())
+      // Capitalize each word
+      .replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   return (
@@ -82,7 +105,7 @@ const TestPanel: React.FC<TestPanelProps> = ({
             {Object.entries(testData).map(([field, value]) => (
               <div key={field} className="grid grid-cols-12 gap-2 p-2 rounded-md hover:bg-muted/40">
                 <div className="col-span-5 font-medium text-sm text-muted-foreground">
-                  {field}:
+                  {formatFieldLabel(field)}:
                 </div>
                 <div className="col-span-6 text-sm break-words">
                   {typeof value === "object" 
