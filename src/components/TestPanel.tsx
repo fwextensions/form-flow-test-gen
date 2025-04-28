@@ -21,19 +21,34 @@ const TestPanel: React.FC<TestPanelProps> = ({
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
+  const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
 
-  const copyToClipboard = () => {
-    const dataStr = JSON.stringify(testData, null, 2);
+  const copyToClipboard = (data: any, label: string) => {
+    const dataStr = JSON.stringify(data, null, 2);
     navigator.clipboard.writeText(dataStr);
-    setHasCopied(true);
     
     toast({
       title: "Copied to clipboard",
-      description: `Test data for ${title} has been copied to clipboard.`,
+      description: `${label} has been copied to clipboard.`,
     });
     
+    return true;
+  };
+
+  const copyPanelData = () => {
+    setHasCopied(copyToClipboard(testData, `Test data for ${title}`));
     setTimeout(() => setHasCopied(false), 2000);
+  };
+
+  const copyFieldData = (field: string, value: any) => {
+    const success = copyToClipboard(value, `Value for ${field}`);
+    if (success) {
+      setCopiedFields(prev => ({ ...prev, [field]: true }));
+      setTimeout(() => {
+        setCopiedFields(prev => ({ ...prev, [field]: false }));
+      }, 2000);
+    }
   };
 
   return (
@@ -52,10 +67,10 @@ const TestPanel: React.FC<TestPanelProps> = ({
         </CardTitle>
         <Button variant="ghost" size="sm" onClick={(e) => {
           e.stopPropagation();
-          copyToClipboard();
+          copyPanelData();
         }} className={cn(hasCopied ? "text-green-500" : "")}>
           <Copy className="h-4 w-4 mr-1" />
-          {hasCopied ? "Copied!" : "Copy"}
+          {hasCopied ? "Copied!" : "Copy Panel"}
         </Button>
       </CardHeader>
       <CardContent 
@@ -69,10 +84,20 @@ const TestPanel: React.FC<TestPanelProps> = ({
                 <div className="col-span-5 font-medium text-sm text-muted-foreground">
                   {field}:
                 </div>
-                <div className="col-span-7 text-sm break-words">
+                <div className="col-span-6 text-sm break-words">
                   {typeof value === "object" 
                     ? JSON.stringify(value) 
                     : String(value)}
+                </div>
+                <div className="col-span-1 flex justify-end">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={cn("h-6 w-6 p-0", copiedFields[field] ? "text-green-500" : "")}
+                    onClick={() => copyFieldData(field, value)}
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
                 </div>
               </div>
             ))}
