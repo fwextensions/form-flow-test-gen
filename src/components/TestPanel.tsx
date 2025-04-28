@@ -51,6 +51,19 @@ const TestPanel: React.FC<TestPanelProps> = ({
     }
   };
 
+  // Helper function to format field keys into label text
+  const formatFieldLabel = (fieldKey: string): string => {
+    // Remove any namespace prefixes if present (after last dot)
+    const cleanKey = fieldKey.includes('.') ? fieldKey.split('.').pop() || fieldKey : fieldKey;
+    
+    // Convert camelCase or snake_case to Title Case with spaces
+    return cleanKey
+      .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+      .replace(/_/g, ' ') // Replace underscores with spaces
+      .replace(/^\w/, (c) => c.toUpperCase()) // Capitalize first letter
+      .trim();
+  };
+
   return (
     <Card className={cn("mb-4 overflow-hidden transition-all", 
       isCollapsed ? "max-h-16" : "max-h-[1000px]")}>
@@ -82,7 +95,7 @@ const TestPanel: React.FC<TestPanelProps> = ({
             {Object.entries(testData).map(([field, value]) => (
               <div key={field} className="grid grid-cols-12 gap-2 p-2 rounded-md hover:bg-muted/40">
                 <div className="col-span-5 font-medium text-sm text-muted-foreground">
-                  {field}:
+                  {formatFieldLabel(field)}:
                 </div>
                 <div className="col-span-6 text-sm break-words">
                   {typeof value === "object" 
