@@ -5,7 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import FileUploader from "@/components/FileUploader";
 import TestDataDisplay from "@/components/TestDataDisplay";
 import Header from "@/components/Header";
-import { parseFormSchema } from "@/lib/schemaParser";
+import { parseFormSchema, InputField } from "@/lib/schemaParser";
 import { generateTestData } from "@/lib/testDataGenerator";
 
 const Index = () => {
@@ -13,6 +13,7 @@ const Index = () => {
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [formSchema, setFormSchema] = useState<any>(null);
   const [testSets, setTestSets] = useState<any[]>([]);
+  const [inputFields, setInputFields] = useState<InputField[]>([]);
   const { toast } = useToast();
 
   const handleFileLoaded = async (content: any) => {
@@ -21,6 +22,7 @@ const Index = () => {
       setFormSchema(content);
       
       const { panels, allInputFields } = parseFormSchema(content);
+      setInputFields(allInputFields);
       
       if (panels.length === 0) {
         toast({
@@ -104,6 +106,7 @@ const Index = () => {
               {!isProcessing && (
                 <TestDataDisplay
                   testSets={testSets}
+                  inputFields={inputFields}
                   onRegenerate={handleRegenerate}
                   isRegenerating={isRegenerating}
                 />

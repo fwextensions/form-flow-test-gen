@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Copy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import TestPanel from "./TestPanel";
+import { InputField } from "@/lib/schemaParser";
 
 interface TestDataDisplayProps {
   testSets: Array<{
@@ -13,12 +14,14 @@ interface TestDataDisplayProps {
       fields: Record<string, any>;
     }>;
   }>;
+  inputFields: InputField[]; // Add inputFields prop
   onRegenerate: () => void;
   isRegenerating: boolean;
 }
 
 const TestDataDisplay: React.FC<TestDataDisplayProps> = ({
   testSets,
+  inputFields,
   onRegenerate,
   isRegenerating,
 }) => {
@@ -95,6 +98,7 @@ const TestDataDisplay: React.FC<TestDataDisplayProps> = ({
                   testData={panel.fields}
                   panelIndex={panelIndex}
                   testIndex={testIndex}
+                  inputFields={inputFields}
                 />
               ))}
             </div>

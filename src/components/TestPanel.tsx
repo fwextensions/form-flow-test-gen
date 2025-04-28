@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { InputField } from "@/lib/schemaParser";
 
 interface TestPanelProps {
   title: string;
   testData: Record<string, any>;
   panelIndex: number;
   testIndex: number;
+  inputFields: InputField[]; // Add inputFields prop to access labels
 }
 
 const TestPanel: React.FC<TestPanelProps> = ({
@@ -18,11 +20,24 @@ const TestPanel: React.FC<TestPanelProps> = ({
   testData,
   panelIndex,
   testIndex,
+  inputFields,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
   const [copiedFields, setCopiedFields] = useState<Record<string, boolean>>({});
   const { toast } = useToast();
+
+  // Helper function to get the label for a field key
+  const getFieldLabel = (fieldKey: string): string => {
+    // Find the input field with the matching key
+    const field = inputFields.find(f => {
+      const key = f.key.includes('.') ? f.key.split('.').pop() || f.key : f.key;
+      return key === fieldKey;
+    });
+    
+    // Return the label if found, otherwise return the original key
+    return field?.label || fieldKey;
+  };
 
   const copyToClipboard = (data: any, label: string) => {
     const dataStr = JSON.stringify(data, null, 2);
@@ -42,7 +57,7 @@ const TestPanel: React.FC<TestPanelProps> = ({
   };
 
   const copyFieldData = (field: string, value: any) => {
-    const success = copyToClipboard(value, `Value for ${field}`);
+    const success = copyToClipboard(value, `Value for ${getFieldLabel(field)}`);
     if (success) {
       setCopiedFields(prev => ({ ...prev, [field]: true }));
       setTimeout(() => {
@@ -82,7 +97,7 @@ const TestPanel: React.FC<TestPanelProps> = ({
             {Object.entries(testData).map(([field, value]) => (
               <div key={field} className="grid grid-cols-12 gap-2 p-2 rounded-md hover:bg-muted/40">
                 <div className="col-span-5 font-medium text-sm text-muted-foreground">
-                  {field}:
+                  {getFieldLabel(field)}:
                 </div>
                 <div className="col-span-6 text-sm break-words">
                   {typeof value === "object" 
