@@ -42,7 +42,7 @@ const TestPanel: React.FC<TestPanelProps> = ({
   };
 
   const copyFieldData = (field: string, value: any) => {
-    const success = copyToClipboard(value, `Value for ${formatFieldLabel(field)}`);
+    const success = copyToClipboard(value, `Value for ${field}`);
     if (success) {
       setCopiedFields(prev => ({ ...prev, [field]: true }));
       setTimeout(() => {
@@ -51,27 +51,17 @@ const TestPanel: React.FC<TestPanelProps> = ({
     }
   };
 
-  // Function to format field keys into readable labels
-  const formatFieldLabel = (key: string): string => {
-    // Handle common field patterns
-    if (key === 'firstName' || key === 'first_name') return 'First Name';
-    if (key === 'lastName' || key === 'last_name') return 'Last Name';
-    if (key === 'emailAddress' || key === 'email') return 'Email Address';
-    if (key === 'phoneNumber' || key === 'phone') return 'Phone Number';
-    if (key === 'zipCode' || key === 'zip') return 'Zip Code';
+  // Helper function to format field keys into label text
+  const formatFieldLabel = (fieldKey: string): string => {
+    // Remove any namespace prefixes if present (after last dot)
+    const cleanKey = fieldKey.includes('.') ? fieldKey.split('.').pop() || fieldKey : fieldKey;
     
-    // General formatting: convert camelCase or snake_case to Title Case with spaces
-    return key
-      // Insert a space before each capital letter and uppercase the first letter
-      .replace(/([A-Z])/g, ' $1')
-      // Replace underscores with spaces
-      .replace(/_/g, ' ')
-      // Trim leading spaces that might result from the replacements
-      .trim()
-      // Capitalize first letter
-      .replace(/^\w/, (c) => c.toUpperCase())
-      // Capitalize each word
-      .replace(/\b\w/g, (l) => l.toUpperCase());
+    // Convert camelCase or snake_case to Title Case with spaces
+    return cleanKey
+      .replace(/([A-Z])/g, ' $1') // Add space before capital letters
+      .replace(/_/g, ' ') // Replace underscores with spaces
+      .replace(/^\w/, (c) => c.toUpperCase()) // Capitalize first letter
+      .trim();
   };
 
   return (
