@@ -1,20 +1,14 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import TestPanel from "./TestPanel";
 import { InputField } from "@/lib/schemaParser";
 
 interface TestDataDisplayProps {
-  testSets: Array<{
-    panels: Array<{
-      title: string;
-      fields: Record<string, any>;
-    }>;
-  }>;
-  inputFields: InputField[]; // Add inputFields prop
+  testSets: Array<Record<string, any>>;
+  inputFields: InputField[];
   onRegenerate: () => void;
   isRegenerating: boolean;
 }
@@ -32,20 +26,18 @@ const TestDataDisplay: React.FC<TestDataDisplayProps> = ({
     return null;
   }
 
+  const getFieldLabel = (key: string): string => {
+    const field = inputFields.find(f => f.key === key);
+    return field?.label || key;
+  };
+
   const copyAllData = (testSetIndex: number) => {
     const dataSet = testSets[testSetIndex];
-    let combinedData: Record<string, any> = {};
-    
-    dataSet.panels.forEach((panel) => {
-      combinedData = { ...combinedData, ...panel.fields };
-    });
-    
-    const dataStr = JSON.stringify(combinedData, null, 2);
+    const dataStr = JSON.stringify(dataSet, null, 2);
     navigator.clipboard.writeText(dataStr);
-    
     toast({
       title: "Copied to clipboard",
-      description: `Complete test set ${parseInt(testSetIndex.toString()) + 1} has been copied to clipboard.`,
+      description: `Complete test set ${testSetIndex + 1} has been copied to clipboard.`,
     });
   };
 
@@ -90,18 +82,29 @@ const TestDataDisplay: React.FC<TestDataDisplayProps> = ({
               </Button>
             </div>
             
-            <div className="space-y-4">
-              {testSet.panels.map((panel, panelIndex) => (
-                <TestPanel
-                  key={`${testIndex}-${panelIndex}`}
-                  title={panel.title}
-                  testData={panel.fields}
-                  panelIndex={panelIndex}
-                  testIndex={testIndex}
-                  inputFields={inputFields}
-                />
-              ))}
-            </div>
+            <Card className="bg-white border border-gray-200 rounded-lg shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-medium text-gray-700">Test Set {testIndex + 1} Data</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* Apply grid to the parent container */}
+                <div className="divide-y divide-gray-100 grid grid-cols-[auto,minmax(0,1fr)] gap-x-4">
+                  {Object.entries(testSet).map(([key, value]) => (
+                    // Render key and value spans directly within the parent grid 
+                    // Use React.Fragment for key prop without adding extra DOM element
+                    <React.Fragment key={key}>
+                      <span className="font-medium text-gray-600 py-1.5 text-sm">
+                        {getFieldLabel(key)}:
+                      </span>
+                      {/* Render value directly, make font semi-bold */}
+                      <span className="text-gray-800 break-words py-1.5 text-sm font-semibold">
+                        {typeof value === 'boolean' ? value.toString() : value} 
+                      </span>
+                    </React.Fragment>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         ))}
       </Tabs>
