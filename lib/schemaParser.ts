@@ -1,4 +1,3 @@
-
 export interface FormPanel {
   title: string;
   key: string;
@@ -96,7 +95,7 @@ const isInputField = (component: any): boolean => {
   const inputTypes = [
     'textfield', 'textarea', 'number', 'password', 'email', 
     'checkbox', 'selectboxes', 'select', 'radio', 'datetime',
-    'day', 'time', 'phoneNumber', 'address', 'signature'
+    'day', 'time', 'phoneNumber', 'signature'
   ];
   
   return inputTypes.includes(component.type);
